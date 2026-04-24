@@ -1,0 +1,22 @@
+/* style.css */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Plus+Jakarta+Sans:wght@400;700&display=swap');
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+#display, #totalResult, #listInput, code {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* Scrollbar personalizada para el textarea */
+#listInput::-webkit-scrollbar {
+    width: 6px;
+}
+#listInput::-webkit-scrollbar-track {
+    background: transparent;
+}
+#listInput::-webkit-scrollbar-thumb {
+    background: #475569;
+    border-radius: 10px;
+}

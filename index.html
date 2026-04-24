@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Inteligente Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-slate-900 text-white min-h-screen flex items-center justify-center p-4">
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl w-full">
+        
+        <div class="bg-slate-800 p-6 rounded-3xl shadow-2xl border border-slate-700">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-blue-400">Calculadora</h2>
+                <span class="text-[10px] bg-blue-500/20 text-blue-300 px-2 py-1 rounded border border-blue-500/30">TECLADO ACTIVO</span>
+            </div>
+            <input type="text" id="display" readonly 
+                class="w-full text-right text-4xl p-4 bg-slate-900 rounded-xl mb-4 border border-slate-700 text-green-400 font-mono shadow-inner" 
+                placeholder="0">
+            
+            <div class="grid grid-cols-4 gap-3">
+                <button onclick="clearDisplay()" class="col-span-2 bg-red-500/20 hover:bg-red-500/40 text-red-400 p-4 rounded-xl font-bold transition-all active:scale-95">AC (Esc)</button>
+                <button onclick="deleteLast()" class="bg-slate-700 hover:bg-slate-600 p-4 rounded-xl transition-all active:scale-95">⌫</button>
+                <button onclick="appendOperator('/')" class="bg-blue-600 hover:bg-blue-500 p-4 rounded-xl font-bold transition-all active:scale-95">÷</button>
+                
+                <button onclick="appendNumber('7')" class="bg-slate-700 hover:bg-slate-600 p-4 rounded-xl transition-all active:scale-95">7</button>
+                <button onclick="appendNumber('8')" class="bg-slate-700 hover:bg-slate-600 p-4 rounded-xl transition-all active:scale-95">8</button>
+                <button onclick="appendNumber('9')" class="bg-slate-700 hover:bg-slate-600 p-4 rounded-xl transition-all active:scale-95">9</button>
+                <button onclick="appendOperator('*')" class="bg-blue-600 hover:bg-blue-500 p-4 rounded-xl font-bold transition-all active:scale-95">×</button>
+                
+                <button onclick="appendNumber('4')" class="bg-slate-700 hover:bg-slate-600 p-4 rounded-xl transition-all active:scale-95">4</button>
+                <button onclick="appendNumber('5')" class="bg-slate-700 hover:bg-slate-600 p-4 rounded-xl transition-all active:scale-95">5</button>
+                <button onclick="appendNumber('6')" class="bg-slate-700 hover:bg-slate-600 p-4 rounded-xl transition-all active:scale-95">6</button>
+                <button onclick="appendOperator('-')" class="bg-blue-600 hover:bg-blue-500 p-4 rounded-xl font-bold transition-all active:scale-95">-</button>
+                
+                <button onclick="appendNumber('1')" class="bg-slate-700 hover:bg-slate-600 p-4 rounded-xl transition-all active:scale-95">1</button>
+                <button onclick="appendNumber('2')" class="bg-slate-700 hover:bg-slate-600 p-4 rounded-xl transition-all active:scale-95">2</button>
+                <button onclick="appendNumber('3')" class="bg-slate-700 hover:bg-slate-600 p-4 rounded-xl transition-all active:scale-95">3</button>
+                <button onclick="appendOperator('+')" class="bg-blue-600 hover:bg-blue-500 p-4 rounded-xl font-bold transition-all active:scale-95">+</button>
+                
+                <button onclick="appendNumber('0')" class="col-span-2 bg-slate-700 hover:bg-slate-600 p-4 rounded-xl transition-all active:scale-95">0</button>
+                <button onclick="appendNumber('.')" class="bg-slate-700 hover:bg-slate-600 p-4 rounded-xl transition-all active:scale-95">.</button>
+                <button onclick="calculate()" class="bg-green-600 hover:bg-green-500 p-4 rounded-xl font-bold transition-all active:scale-95">=</button>
+            </div>
+        </div>
+
+        <div class="bg-slate-800 p-6 rounded-3xl shadow-2xl border border-slate-700 flex flex-col">
+            <h2 class="text-xl font-bold mb-4 text-purple-400">Sumadora Multiformato</h2>
+            <p class="text-xs text-slate-400 mb-3 leading-relaxed">
+                Pega cualquier formato: <code class="text-slate-300">$1.200,50</code>, <code class="text-slate-300">5000</code> o <code class="text-slate-300">30.50</code>. El sistema detectará los números automáticamente.
+            </p>
+            <textarea id="listInput" oninput="processList()"
+                class="flex-grow w-full p-4 bg-slate-900 rounded-xl border border-slate-700 focus:ring-2 focus:ring-purple-500 focus:outline-none font-mono text-sm mb-4 resize-none transition-all"
+                placeholder="Pega aquí tus datos..."></textarea>
+            
+            <div class="bg-slate-900 p-5 rounded-xl border border-slate-700 mb-4 shadow-inner">
+                <div class="flex justify-between items-center">
+                    <span class="text-slate-400 text-xs uppercase font-bold tracking-tighter">Total Detectado</span>
+                    <span id="itemsCount" class="text-[10px] text-slate-500 bg-slate-800 px-2 py-0.5 rounded">0 ítems</span>
+                </div>
+                <span id="totalResult" class="text-4xl font-bold text-purple-400 block mt-1 tracking-tight">$ 0,00</span>
+            </div>
+
+            <button onclick="clearList()" class="w-full bg-slate-700 hover:bg-slate-600 p-3 rounded-xl transition-all text-sm font-semibold">
+                Limpiar Lista
+            </button>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

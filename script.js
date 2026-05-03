@@ -1,15 +1,13 @@
-// script.js
-
 const display = document.getElementById('display');
 const listInput = document.getElementById('listInput');
 const totalResult = document.getElementById('totalResult');
+const totalIngresos = document.getElementById('totalIngresos');
+const totalEgresos = document.getElementById('totalEgresos');
 const itemsCount = document.getElementById('itemsCount');
 
 // --- 1. SOPORTE PARA TECLADO ---
 document.addEventListener('keydown', (e) => {
-    // Si el usuario está escribiendo en el textarea, no activar la calculadora
     if (document.activeElement === listInput) return;
-
     if (e.key >= '0' && e.key <= '9') appendNumber(e.key);
     if (e.key === '.') appendNumber('.');
     if (['+', '-', '*', '/'].includes(e.key)) appendOperator(e.key);
@@ -38,7 +36,6 @@ function deleteLast() { display.value = display.value.slice(0, -1); }
 
 function calculate() {
     try {
-        // Usamos Function en lugar de eval por seguridad
         const result = new Function('return ' + display.value)();
         display.value = Number.isInteger(result) ? result : result.toFixed(2);
     } catch {
@@ -47,44 +44,65 @@ function calculate() {
     }
 }
 
-// --- 3. SUMADORA MULTIFORMATO (El "Cerebro") ---
+// --- 3. SUMADORA MULTIFORMATO CON DETECCIÓN DE EGRESOS ---
 function processList() {
     const text = listInput.value;
     
-    // Esta expresión regular busca montos de dinero:
-    // Soporta: $1.000,00 | 1000.00 | 1.000 | 1000
-    // Lógica: Divide el texto por espacios, saltos de línea o el símbolo $
-    const segments = text.split(/[\n\s$]+/).filter(s => s.trim() !== "");
+    // Dividir por líneas o espacios, ignorando vacíos
+    const lines = text.split(/[\n\s]+/).filter(l => l.trim() !== "");
     
-    let total = 0;
+    let sumaIngresos = 0;
+    let sumaEgresos = 0;
     let count = 0;
 
-    segments.forEach(seg => {
-        // Limpiamos el segmento
-        // Si tiene una coma y un punto (ej: 1.200,50), quitamos el punto y cambiamos coma por punto
-        // Si solo tiene coma (ej: 1200,50), cambiamos coma por punto
-        let clean = seg;
+    lines.forEach(line => {
+        let isEgreso = false;
+        let clean = line.trim();
 
+        // Detectar si el número está entre paréntesis (egreso)
+        if (clean.startsWith('(') && clean.endsWith(')')) {
+            isEgreso = true;
+            clean = clean.replace('(', '').replace(')', '');
+        }
+
+        // Limpieza de formato monetario ($1.000,00 -> 1000.00)
+        clean = clean.replace('$', '');
         if (clean.includes(',') && clean.includes('.')) {
             clean = clean.replace(/\./g, '').replace(',', '.');
         } else if (clean.includes(',')) {
-            // Caso donde la coma se usa como decimal pero no hay puntos de miles
             clean = clean.replace(',', '.');
         }
 
         const num = parseFloat(clean);
+        
         if (!isNaN(num)) {
-            total += num;
+            if (isEgreso) {
+                sumaEgresos += num;
+            } else {
+                sumaIngresos += num;
+            }
             count++;
         }
     });
 
-    // Formatear el resultado
-    totalResult.innerText = new Intl.NumberFormat('es-AR', {
+    const totalNeto = sumaIngresos - sumaEgresos;
+
+    // Formateador de moneda
+    const formatter = new Intl.NumberFormat('es-AR', {
         style: 'currency',
         currency: 'ARS',
         minimumFractionDigits: 2
-    }).format(total);
+    });
+
+    // Actualizar Interfaz
+    totalIngresos.innerText = formatter.format(sumaIngresos);
+    totalEgresos.innerText = formatter.format(sumaEgresos);
+    totalResult.innerText = formatter.format(totalNeto);
+    
+    // Cambiar color del total si es negativo o positivo
+    totalResult.className = totalNeto >= 0 
+        ? "text-4xl font-bold text-white block mt-1 tracking-tight" 
+        : "text-4xl font-bold text-red-500 block mt-1 tracking-tight";
 
     itemsCount.innerText = `${count} ítems`;
 }
@@ -93,3 +111,4 @@ function clearList() {
     listInput.value = '';
     processList();
 }
+

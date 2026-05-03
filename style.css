@@ -1,11 +1,11 @@
-/* style.css */
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Plus+Jakarta+Sans:wght@400;700&display=swap');
 
 body {
     font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: #0f172a;
 }
 
-#display, #totalResult, #listInput, code {
+#display, #totalResult, #totalIngresos, #totalEgresos, #listInput, code {
     font-family: 'JetBrains Mono', monospace;
 }
 
@@ -19,4 +19,9 @@ body {
 #listInput::-webkit-scrollbar-thumb {
     background: #475569;
     border-radius: 10px;
+}
+
+/* Efecto de foco en el textarea */
+#listInput:focus {
+    background-color: #020617;
 }

@@ -5,11 +5,10 @@ body {
     background-color: #0f172a;
 }
 
-#display, #totalResult, #totalIngresos, #totalEgresos, #listInput, code {
+#display, #totalResult, #totalIngresos, #totalEgresos, #listInput {
     font-family: 'JetBrains Mono', monospace;
 }
 
-/* Scrollbar personalizada para el textarea */
 #listInput::-webkit-scrollbar {
     width: 6px;
 }
@@ -21,7 +20,11 @@ body {
     border-radius: 10px;
 }
 
-/* Efecto de foco en el textarea */
-#listInput:focus {
-    background-color: #020617;
+button:active {
+    transform: scale(0.96);
+}
+
+textarea::placeholder {
+    color: #475569;
+    font-size: 0.8rem;
 }

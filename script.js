@@ -21,7 +21,6 @@ function appendNumber(num) {
     if (display.value === '0') display.value = '';
     display.value += num;
 }
-
 function appendOperator(op) {
     const last = display.value.slice(-1);
     if (['+', '-', '*', '/'].includes(last)) {
@@ -30,10 +29,8 @@ function appendOperator(op) {
         display.value += op;
     }
 }
-
 function clearDisplay() { display.value = ''; }
 function deleteLast() { display.value = display.value.slice(0, -1); }
-
 function calculate() {
     try {
         const result = new Function('return ' + display.value)();
@@ -44,11 +41,10 @@ function calculate() {
     }
 }
 
-// --- 3. SUMADORA MULTIFORMATO CON DETECCIÓN DE EGRESOS ---
+// --- 3. LÓGICA DE PROCESAMIENTO INTELIGENTE (CEREBRO) ---
 function processList() {
     const text = listInput.value;
-    
-    // Dividir por líneas o espacios, ignorando vacíos
+    // Dividimos por saltos de línea o espacios, limpiando símbolos de moneda
     const lines = text.split(/[\n\s]+/).filter(l => l.trim() !== "");
     
     let sumaIngresos = 0;
@@ -57,52 +53,56 @@ function processList() {
 
     lines.forEach(line => {
         let isEgreso = false;
-        let clean = line.trim();
+        let str = line.trim().replace('$', '');
 
-        // Detectar si el número está entre paréntesis (egreso)
-        if (clean.startsWith('(') && clean.endsWith(')')) {
+        // Detectar Egreso por paréntesis
+        if (str.startsWith('(') && str.endsWith(')')) {
             isEgreso = true;
-            clean = clean.replace('(', '').replace(')', '');
+            str = str.replace('(', '').replace(')', '');
         }
 
-        // Limpieza de formato monetario ($1.000,00 -> 1000.00)
-        clean = clean.replace('$', '');
-        if (clean.includes(',') && clean.includes('.')) {
-            clean = clean.replace(/\./g, '').replace(',', '.');
-        } else if (clean.includes(',')) {
-            clean = clean.replace(',', '.');
+        // --- LIMPIEZA MULTIFORMATO EXTREMA ---
+        const lastDot = str.lastIndexOf('.');
+        const lastComma = str.lastIndexOf(',');
+
+        if (lastComma > lastDot) {
+            // Formato: 93.433,90 -> El decimal es la COMA
+            // Borramos los puntos (miles) y convertimos la coma en punto decimal para JS
+            str = str.replace(/\./g, '').replace(',', '.');
+        } else if (lastDot > lastComma) {
+            // Formato: 93,433.90 -> El decimal es el PUNTO
+            // Borramos las comas (miles)
+            str = str.replace(/,/g, '');
+        } else {
+            // No hay separadores o solo hay uno (ej: 1500 o 1500,50 o 1500.50)
+            str = str.replace(',', '.');
         }
 
-        const num = parseFloat(clean);
+        const num = parseFloat(str);
         
         if (!isNaN(num)) {
-            if (isEgreso) {
-                sumaEgresos += num;
-            } else {
-                sumaIngresos += num;
-            }
+            if (isEgreso) sumaEgresos += num;
+            else sumaIngresos += num;
             count++;
         }
     });
 
     const totalNeto = sumaIngresos - sumaEgresos;
-
-    // Formateador de moneda
     const formatter = new Intl.NumberFormat('es-AR', {
         style: 'currency',
         currency: 'ARS',
         minimumFractionDigits: 2
     });
 
-    // Actualizar Interfaz
+    // Actualizar valores en pantalla
     totalIngresos.innerText = formatter.format(sumaIngresos);
     totalEgresos.innerText = formatter.format(sumaEgresos);
     totalResult.innerText = formatter.format(totalNeto);
     
-    // Cambiar color del total si es negativo o positivo
-    totalResult.className = totalNeto >= 0 
-        ? "text-4xl font-bold text-white block mt-1 tracking-tight" 
-        : "text-4xl font-bold text-red-500 block mt-1 tracking-tight";
+    // Cambiar color según el resultado neto
+    if (totalNeto > 0) totalResult.style.color = "#4ade80"; // Verde
+    else if (totalNeto < 0) totalResult.style.color = "#f87171"; // Rojo
+    else totalResult.style.color = "white";
 
     itemsCount.innerText = `${count} ítems`;
 }
@@ -111,4 +111,3 @@ function clearList() {
     listInput.value = '';
     processList();
 }
-
